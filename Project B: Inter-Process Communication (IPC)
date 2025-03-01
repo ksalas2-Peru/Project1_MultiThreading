@@ -1,0 +1,32 @@
+using System;
+using System.IO;
+using System.IO.Pipes;
+using System.Threading.Tasks;
+
+class PipeExample
+{
+    static async Task Server()
+    {
+        using var pipeServer = new NamedPipeServerStream("testpipe", PipeDirection.Out);
+        await pipeServer.WaitForConnectionAsync();
+        using var writer = new StreamWriter(pipeServer);
+        writer.AutoFlush = true;
+        await writer.WriteLineAsync("Hello from server!");
+    }
+
+    static async Task Client()
+    {
+        using var pipeClient = new NamedPipeClientStream(".", "testpipe", PipeDirection.In);
+        await pipeClient.ConnectAsync();
+        using var reader = new StreamReader(pipeClient);
+        Console.WriteLine(await reader.ReadLineAsync());
+    }
+
+    static async Task Main()
+    {
+        Task serverTask = Server();
+        await Task.Delay(500);
+        await Client();
+        await serverTask;
+    }
+}
