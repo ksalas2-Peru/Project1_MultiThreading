@@ -1,0 +1,12 @@
+static void Task2()
+{
+    lock (lock1)
+    {
+        Console.WriteLine("Task2 acquired lock1");
+        Thread.Sleep(500);
+        lock (lock2)
+        {
+            Console.WriteLine("Task2 acquired lock2");
+        }
+    }
+}
